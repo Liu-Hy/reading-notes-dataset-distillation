@@ -5,7 +5,7 @@
 
 **Method**: 
 - Use a differentiable augmentation method ("multi-formation") on the condensed data: partition each image into $2 \times 2$ regions and upsample them to the original resolution
-- Propose a refined algorithm based on the gradient matching method in . Most importantly, they propose to train the model on the full training set instead of the synthetic dataset. They deem that the common practice of training the model $\theta_t$ on the condensed dataset $\mathcal{S}$ has two shorcomings: (1) the strong coupling of $\theta_t$ and $\mathcal{S}$ leads to a chicken-egg problem that makes the optimization unstable; (2) the small size of $\mathcal{S}$ leads to quick overfitting and vanishing gradient, making it hard to match the gradient using a distance-based loss. The benefit of training on the real dataset was shown through ablation studies. They also observed that models in the early training phase has gradients that are more informative for dataset distillation.
+- Proposed a refined algorithm based on the gradient matching method in Zhao et al. [2]. Their main proposal is to train the model on the full training set instead of the synthetic dataset. They find that the common practice of training the model $\theta_t$ on the condensed dataset $\mathcal{S}$ has two shorcomings: (1) the strong coupling of $\theta_t$ and $\mathcal{S}$ leads to a chicken-egg problem that makes the optimization unstable; (2) the small size of $\mathcal{S}$ leads to quick overfitting and vanishing gradient, making it hard to match the gradient using a distance-based loss. The benefit of training on the real dataset was shown through ablation studies. They also observed that models in the early training phase has gradients that are more informative for dataset distillation.
 
 **Advantages**: 
 - Both their proposed multi-formation method, and findings in optimization techniques are simple yet effective. The multi-formation is compatible with other strong augmentation methods such as Augmix to further improve performance.
@@ -19,7 +19,7 @@
 **Method**: 
 - Consider each synthetic image as a linear combination of a set of base vectors $\mathcal{M}=\\{\mathbf{b}_1, \dots, \mathbf{b}_K\\}$, where each $\mathbf{b}_k \in \mathbb{R}^d$ has the same dimension as $\mathbf{x}_k$. They learn a set of matrices $\\{\mathbf{A}_1, \dots, \mathbf{A}_r\\}$ where each $\mathbf{A}_i \in \mathbb{R}^{d_y \times K}$ maps the label $\mathbf{y} \in \mathbb{R}^{d_y \times 1}$ to coefficients of the bases. Then for $i=1, \dots, r$,
 $${\mathbf{x}_i^{\prime}}^T = \mathbf{y}^{T} \mathbf{A}_i [\mathbf{b}_i; \dots ;\mathbf{b}_k]^T$$
-- They base their work on the dataset distillation method in . They used the same BPTT algorithm to computate hypergradient, but found that using SGD with momentum and unrolling more steps is important to high performance. 
+- They base their work on the dataset distillation method in Wang et al. [1]. They used the same BPTT algorithm to computate hypergradient, but found that using SGD with momentum and unrolling more steps is important to high performance. 
 
 **Advantages**: 
 - Captures the inter-example and inter-class relationships by sharing the bases as well as the mapping from label to coefficients. The parameter amount doesn't scale with the number of classes, which is beneficial in multi-class settings
@@ -57,22 +57,36 @@ $${\mathbf{x}_i^{\prime}}^T = \mathbf{y}^{T} \mathbf{A}_i [\mathbf{b}_i; \dots ;
 </p>
 
 **Advantages**: 
-- Their method is generalizable. They applied their factorization to various methods for dataset distillation and achieved consistent performance gain.
+- Their method is generalizable. They applied their factorization to various dataset distillation methods and achieved consistent performance gain. 
 - Using the same number of final images (and much less parameters), their method still outperforms the baseline consistently, which indicates that the inductive bias introduced by their method is beneficial (probably because the hallucinators capture the different styles that exist in the dataset).
 
 **Limitation**: 
-- In their method, the bases remain the same spatial resolution as the original images, while their formulation actually allows for a much higher compression ratio by using a low-dimensional latent code and a generator network. They experimented with reducing the channels of the bases to 1 and the performance did not reduce much. It remains to be seen whether they can reduce the spatial resolution as well.
+- In their method, the bases remain the same spatial resolution as the original images, while their formulation should allow for a much higher compression ratio. They experimented with reducing the channels of the bases to 1 and the performance did not reduce much. It remains to be seen whether they can reduce the spatial resolution as well.
 
 ### Dataset Condensation via Efficient Synthetic-Data Parameterization
-**Motivation**: To better utilize the regularity in a given dataset, generate data from low-dimensional latent codes with neural decoders.
+**Motivation**: To better utilize the regularity in a given dataset, assume the data are generated from low-dimensional latent codes with neural decoders.
 
 **Method**: 
 - Factorize the dataset into the cartesian product of a set of low-dimensional latent codes and a set of decoders, where the decoders are generator networks with transpose convolution layers.
-- They base their method on distribution matching in , which uses randomly generated feature extractors $g(\dot)$ without training. Denote the set of real examples for a class $c$ as $\mathcal{X_c} = \\{x_{c,1}, \dots, x_{c,N}\\}$, $c=1, \dots, N$. Denote the set of latent codes for class $c$ as $\mathcal{\Theta_c} = \\{\theta_{c,1}, \dots, \theta_{c,M}\\}$. $f(\theta; \phi_d)$ is the dth decoder parameterized by $\phi_d$, and let $\phi = \\{\phi_1, \dots, \phi_d\\}$. They use MMD loss to match the distribution:
+- They base their method on distribution matching in Zhao et al. [3], which uses randomly generated feature extractors $g(\dot)$ without training. Denote the set of real examples for a class $c$ as $\mathcal{X_c} = \\{x_{c,1}, \dots, x_{c,N}\\}$, $c=1, \dots, N$. Denote the set of latent codes for class $c$ as $\mathcal{\Theta_c} = \\{\theta_{c,1}, \dots, \theta_{c,M}\\}$. $f(\theta; \phi_d)$ is the dth decoder parameterized by $\phi_d$, and let $\phi = \\{\phi_1, \dots, \phi_d\\}$. They use MMD loss to match the distribution:
 
 <p align="center">
   <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/imgs/KFS%20eq1.png" width="500" height="66"/>
 </p>
 
-- They use full batch training for both real and synthetic data. They observe that previous methods that subsample synthetic data produce biased gradients which prevent the synthetic examples from being diversified, and that subsampling of real examples produces high-variance gradients degrading the quality of distillation.
+- They use full batch training for both real and synthetic data. They observe that previous methods that subsample synthetic data in mini-batches produce biased gradients which hinder the diversity of synthetic examples, and that subsampling of real examples produces high-variance gradients degrading the quality of distillation. They also derived the formulas of gradient bias and variance in simplified settings.
 
+**Advantages**: 
+- As of January 2023, their method has the best overall performance in all data distillation methods. The good performance is consistent when limiting the number of training steps during evaluation, showing the effectiveness of their method.
+- With a low-dimensional latent code and a light-weight decoder network, their method has the highest compression ratio.
+- Without a side component to encourage diversity, their method is able to generate diverse latent codes that capture the multi-modality of the data distribution.
+
+**Limitations**:
+- Full batch training is expensive, so they only experimented with distribution matching-based method to avoid computing hyper-gradients. More work needs to be done to make the algorithm more efficient and adapt to other data distillation algorithms
+- It may be better to condition the decoders on label information because different labels may have a different set of modes in the dataset. 
+
+
+## References
+[1] Tongzhou Wang, Jun-Yan Zhu, Antonio Torralba, and Alexei A. Efros. Dataset Distillation, Feb. 2020. arXiv:1811.10959 [cs, stat].\
+[2] Bo Zhao, Konda Reddy Mopuri, and Hakan Bilen. Dataset Condensation with Gradient Matching, Mar. 2021. arXiv:2006.05929 [cs]. \
+[3] Bo Zhao and Hakan Bilen. Dataset condensation with distribution matching. arxiv:2110.04181 [cs].
