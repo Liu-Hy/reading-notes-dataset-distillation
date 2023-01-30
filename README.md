@@ -64,15 +64,15 @@ $${\mathbf{x}_i^{\prime}}^T = \mathbf{y}^{T} \mathbf{A}_i [\mathbf{b}_i; \dots ;
 - In their method, the bases remain the same spatial resolution as the original images, while their formulation actually allows for a much higher compression ratio by using a low-dimensional latent code and a generator network. They experimented with reducing the channels of the bases to 1 and the performance did not reduce much. It remains to be seen whether they can reduce the spatial resolution as well.
 
 ### Dataset Condensation via Efficient Synthetic-Data Parameterization
-Motivation: To better utilize the regularity in a given dataset, generate data from low-dimensional latent codes with neural decoders.
-Method: 
+**Motivation**: To better utilize the regularity in a given dataset, generate data from low-dimensional latent codes with neural decoders.
+
+**Method**: 
 - Factorize the dataset into the cartesian product of a set of low-dimensional latent codes and a set of decoders, where the decoders are generator networks with transpose convolution layers.
-- They base their method on distribution matching in , which uses randomly generated feature extractors $g(\dot)$ without training. Denote the set of real examples for a class $c$ as $\mathcal{X_c} = \\{x_{c,1}, \dots, x_{c,N}\\}$, $c=1, \dots, N$. Denote the set of latent codes for class $c$ as $\mathcal{\Theta_c} = \\{\theta_{c,1}, \dots, \theta_{c,M}\\}$. $f(\theta; \phi_d)$ is the dth decoder parameterized by $\phi_d$, and let $\phi = \\{\phi_1, \dots, \phi_d\\}$
-- 
-$\mathcal{X_c} = x_{c,1}$
+- They base their method on distribution matching in , which uses randomly generated feature extractors $g(\dot)$ without training. Denote the set of real examples for a class $c$ as $\mathcal{X_c} = \\{x_{c,1}, \dots, x_{c,N}\\}$, $c=1, \dots, N$. Denote the set of latent codes for class $c$ as $\mathcal{\Theta_c} = \\{\theta_{c,1}, \dots, \theta_{c,M}\\}$. $f(\theta; \phi_d)$ is the dth decoder parameterized by $\phi_d$, and let $\phi = \\{\phi_1, \dots, \phi_d\\}$. They use MMD loss to match the distribution:
+
 <p align="center">
   <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/imgs/KFS%20eq1.png" width="500" height="66"/>
 </p>
 
-
+- They use full batch training for both real and synthetic data. They observe that previous methods that subsample synthetic data produce biased gradients which prevent the synthetic examples from being diversified, and that subsampling of real examples produces high-variance gradients degrading the quality of distillation.
 
