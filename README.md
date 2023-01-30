@@ -9,4 +9,9 @@ $${\mathbf{x}_i^{\prime}}^T = \mathbf{y}^{T} \mathbf{A}_i [\mathbf{b}_i; \dots ;
 
 **Advantages**: 
 - Captured the inter-example and inter-class relationship by sharing the base vectors and the mapping from label to coefficients. The parameter amount doesn't scale with the number of classes, making it suitable in multi-class settings
-- Reached good performance (slightly higher than HaBa)
+- They showed that the learned compressed data can be used to synthetize new classifiers in two settings (Section 5.3).
+
+**Limitations**: 
+- Their inner training requires too many steps (e.g. 200), which is time-consuming. They use an offline method where the model is initialized from scratch after each update of the synthetic data, which may be inefficient. It is unclear how their method would work with an online method.
+- They use fixed one-hot labels during training, while their formulation seems to have more potentials for soft labels and label embeddings.
+
