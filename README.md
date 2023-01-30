@@ -34,28 +34,33 @@ $${\mathbf{x}_i^{\prime}}^T = \mathbf{y}^{T} \mathbf{A}_i [\mathbf{b}_i; \dots ;
 
 **Method**: 
 - Factorize the dataset into the cartesian product of a set of bases and a set of hallucinators $\\{H_{\theta_j}\\}$, where the hallucinators are style transfer networks that scales and shifts the latent features of the bases. This results in $|\mathcal{H}| |\mathcal{B}|$ synthetic examples. Visualizationg of the learned representation shows that the bases mainly store the structure and contour information, while the hallucinators render the styles and details of the image.
-- To encourage diversity of the hallucinators, trained a feature extractor and the hallucinators in an adversarial setting. 
-  - The feature extractor acts as an adversary that minimize the divergence between the outputs of two different hallucinators from the same basis. Let $F$ denote the feature extractor and $F_{-1}$ denote the feature at the last hidden layer. $F$ is trained with a contrastive loss as follows:
+- To encourage diversity of the hallucinators, trained a feature extractor and the hallucinators in an adversarial setting ("adversary contrastive constraint"). 
+  - The feature extractor acts as an adversary that minimizes the divergence between the outputs of two different hallucinators from the same basis. Let $F$ denote the feature extractor and $F_{-1}$ denote the feature at the last hidden layer. $F$ is trained with a contrastive loss $\mathcal{L}_{con}$:
 <p align="center">
   <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/imgs/HaBa%20eq3.png" width="500" height="72"/>
 </p>
 
-  - $F$ is also trained with the cross-entropy loss in the classification task over the synthetic data:
+  - $F$ is also trained with $\mathcal{L}_{task}$, the cross-entropy loss in the classification task over the synthetic data:
 <p align="center">
   <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/imgs/HaBa%20eq%204.png" width="280" height="36"/>
 </p>
 
-  - Meanwhile, the hallucinators maximize the divergence to increase diversity. Different from $\mathcal{L_{con}}$, they use cosine similarity as the metric:
+  - Meanwhile, the synthetic set $\mathcal{S}$ maximizes the divergence to increase diversity. Different from $\mathcal{L_{con}}$, they use cosine similarity as the metric:
 <p align="center">
   <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/imgs/HaBa%20eq%205.png" width="400" height="72"/>
 </p>
 
-- 
+- $\mathcal{S}$ is also trained on $\mathcal{L}_{DD}$, the loss for dataset distillation:
 
 <p align="center">
   <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/imgs/HaBa%20eq6.png" width="240" height="36"/>
 </p>
 
+**Advantages**: 
+- Their method is generalizable. They applied their factorization to various methods for dataset distillation and achieved consistent performance gain.
+- Using the same number of final images (and much less parameters), their method still outperforms the baseline consistently, which indicates that the inductive bias introduced by their method is beneficial (probably because the hallucinators capture the different styles that exist in the dataset).
 
+**Limitation**: 
+- In their method, the bases remain the same spatial resolution as the original images, while their formulation actually allows for a much higher compression ratio by using a low-dimensional latent code and a generator network. They experimented with reducing the channels.
 
 
