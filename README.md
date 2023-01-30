@@ -33,4 +33,5 @@ $${\mathbf{x}_i^{\prime}}^T = \mathbf{y}^{T} \mathbf{A}_i [\mathbf{b}_i; \dots ;
 **Motivation**: capture the relationship between data examples for more efficient representation
 
 **Method**: 
+- Factorize the dataset into the cartisian product of a set of bases $$ and a set of hallucinators $$
 
