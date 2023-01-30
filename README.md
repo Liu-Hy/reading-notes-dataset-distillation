@@ -34,7 +34,11 @@ $${\mathbf{x}_i^{\prime}}^T = \mathbf{y}^{T} \mathbf{A}_i [\mathbf{b}_i; \dots ;
 
 **Method**: 
 - Factorize the dataset into the cartesian product of a set of bases and a set of hallucinators $\\{H_{\theta_j}\\}$, where the hallucinators are style transfer networks that scales and shifts the latent features of the bases. This results in $|\mathcal{H}| |\mathcal{B}|$ synthetic examples. Visualizationg of the learned representation shows that the bases mainly store the structure and contour information, while the hallucinators render the styles and details of the image.
-- To encourage diversity of the hallucinators, trained a feature extractor and the hallucinators in an adversarial setting. The feature extractor act as an adversary that minimize the divergence between the outputs of two different hallucinators from the same basis. Let $F$ denote the feature extractor and $F_{-1}$ denote the feature at the last hidden layer. They use a contrastive loss as follows:
+- To encourage diversity of the hallucinators, trained a feature extractor and the hallucinators in an adversarial setting. The feature extractor acts as an adversary that minimize the divergence between the outputs of two different hallucinators from the same basis. Let $F$ denote the feature extractor and $F_{-1}$ denote the feature at the last hidden layer. $F$ is trained with a contrastive loss as follows:
+<p align="center">
+  <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/HaBa%20eq3" width="500" height="72"/>
+</p>
+Meanwhile, the hallucinators maximize the divergence to increase diversity. They use a related but different loss:
 
 
 
