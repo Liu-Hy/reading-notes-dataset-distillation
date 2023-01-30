@@ -27,18 +27,34 @@ $${\mathbf{x}_i^{\prime}}^T = \mathbf{y}^{T} \mathbf{A}_i [\mathbf{b}_i; \dots ;
 
 **Limitations**: 
 - Their inner training requires too many steps (e.g. 200), which is time-consuming. They use an offline method where the model is initialized from scratch after each update of the synthetic data, which may be inefficient. It is unclear how their method would work with an online method.
-- They use fixed one-hot labels during training, while their formulation seems to have more potentials for soft labels and label embeddings.
+- They only use fixed one-hot labels during training, while their formulation seems to have more potentials for soft labels and label embeddings.
 
 ### Dataset Distillation via Factorization
 **Motivation**: capture the relationship between data examples for more efficient representation
 
 **Method**: 
 - Factorize the dataset into the cartesian product of a set of bases and a set of hallucinators $\\{H_{\theta_j}\\}$, where the hallucinators are style transfer networks that scales and shifts the latent features of the bases. This results in $|\mathcal{H}| |\mathcal{B}|$ synthetic examples. Visualizationg of the learned representation shows that the bases mainly store the structure and contour information, while the hallucinators render the styles and details of the image.
-- To encourage diversity of the hallucinators, trained a feature extractor and the hallucinators in an adversarial setting. The feature extractor acts as an adversary that minimize the divergence between the outputs of two different hallucinators from the same basis. Let $F$ denote the feature extractor and $F_{-1}$ denote the feature at the last hidden layer. $F$ is trained with a contrastive loss as follows:
+- To encourage diversity of the hallucinators, trained a feature extractor and the hallucinators in an adversarial setting. 
+  - The feature extractor acts as an adversary that minimize the divergence between the outputs of two different hallucinators from the same basis. Let $F$ denote the feature extractor and $F_{-1}$ denote the feature at the last hidden layer. $F$ is trained with a contrastive loss as follows:
 <p align="center">
-  <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/HaBa%20eq3" width="500" height="72"/>
+  <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/imgs/HaBa%20eq3.png" width="500" height="72"/>
 </p>
-Meanwhile, the hallucinators maximize the divergence to increase diversity. They use a related but different loss:
+
+  - $F$ is also trained with the cross-entropy loss in the classification task over the synthetic data:
+<p align="center">
+  <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/imgs/HaBa%20eq%204.png" width="280" height="36"/>
+</p>
+
+  - Meanwhile, the hallucinators maximize the divergence to increase diversity. Different from $\mathcal{L_{con}}$, they use cosine similarity as the metric:
+<p align="center">
+  <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/imgs/HaBa%20eq%205.png" width="400" height="72"/>
+</p>
+
+- 
+
+<p align="center">
+  <img src="https://github.com/Liu-Hy/reading-notes-dataset-distillation/blob/main/imgs/HaBa%20eq6.png" width="240" height="36"/>
+</p>
 
 
 
